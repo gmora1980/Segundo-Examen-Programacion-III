@@ -1,5 +1,4 @@
-﻿' App_Code/Data/ClienteRepository.vb
-Imports System.Data.SqlClient
+﻿Imports System.Data.SqlClient
 Imports System.Collections.Generic
 
 Public Class ClienteRepository

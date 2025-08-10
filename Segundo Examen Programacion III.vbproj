@@ -242,7 +242,9 @@
     <Compile Include="Login.aspx.vb.vb">
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Models\Cliente.vb" />
+    <Compile Include="Models\Cliente.vb">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Contact.aspx.designer.vb">
       <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
