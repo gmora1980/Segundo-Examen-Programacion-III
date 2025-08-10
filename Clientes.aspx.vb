@@ -3,6 +3,8 @@ Partial Class Clientes
     Inherits System.Web.UI.Page
 
     Private repo As New ClienteRepository()
+    Private Shared SelectedIndex As Integer
+    Public Property lblMensaje As Object
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         If Not IsPostBack Then
@@ -14,71 +16,89 @@ Partial Class Clientes
     End Sub
 
     Private Sub CargarClientes()
+        Dim gvClientes As Object = Nothing
         gvClientes.DataSource = repo.GetAll()
-        gvClientes.DataBind()
+        Clientes.DataBind()
     End Sub
 
-    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs)
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs, lblMensaje As Object, lblMensajeValidacion As Object, lblErrorNombre As Object)
+        btnGuardar_Click(sender, e, lblMensaje, lblMensajeValidacion, lblErrorNombre, lblValidacionNombre)
+    End Sub
+
+    Protected Sub btnGuardar_Click(sender As Object, e As EventArgs, lblMensaje As Object, lblMensajeValidacion As Object, lblErrorNombre As Object, lblValidacionNombre As Object)
+        Dim txtNombre As Object = Nothing
         ' Validaciones manuales (además de los validadores)
-        If String.IsNullOrWhiteSpace(txtNombre.Text) Then
-            lblMensaje.Text = "Nombre es obligatorio."
-            lblMensaje.ForeColor = Drawing.Color.Red
-            Return
-        End If
+        If Not String.IsNullOrWhiteSpace(txtNombre.Text) Then
+            Dim txtApellidos As Object = Nothing
 
-        If String.IsNullOrWhiteSpace(txtApellidos.Text) Then
-            lblMensaje.Text = "Apellidos son obligatorios."
-            lblMensaje.ForeColor = Drawing.Color.Red
-            Return
-        End If
+            If String.IsNullOrWhiteSpace(txtApellidos.Text) Then
+                lblMensaje.Text = "Apellidos son obligatorios."
+                lblMensaje.ForeColor = Drawing.Color.Red
+                Return
+            End If
 
-        If String.IsNullOrWhiteSpace(txtTelefono.Text) Then
-            lblMensaje.Text = "Teléfono es obligatorio."
-            lblMensaje.ForeColor = Drawing.Color.Red
-            Return
-        End If
+            Dim txtTelefono As Object = Nothing
 
-        If String.IsNullOrWhiteSpace(txtEmail.Text) OrElse Not IsValidEmail(txtEmail.Text) Then
-            lblMensaje.Text = "Email no válido."
-            lblMensaje.ForeColor = Drawing.Color.Red
-            Return
-        End If
+            If String.IsNullOrWhiteSpace(txtTelefono.Text) Then
+                lblMensaje.Text = "Teléfono es obligatorio."
+                lblMensaje.ForeColor = Drawing.Color.Red
+                Return
+            End If
 
-        Dim cliente As New Cliente()
-        cliente.Nombre = txtNombre.Text.Trim()
-        cliente.Apellidos = txtApellidos.Text.Trim()
-        cliente.Telefono = txtTelefono.Text.Trim()
-        cliente.Email = txtEmail.Text.Trim()
+            Dim txtEmail As Object = Nothing
 
-        Dim clienteId As Integer = 0
-        If Integer.TryParse(ViewState("ClienteId"), clienteId) AndAlso clienteId > 0 Then
-            cliente.ClienteId = clienteId
-            repo.Update(cliente)
-            lblMensaje.Text = "Cliente actualizado correctamente."
+            If String.IsNullOrWhiteSpace(txtEmail.Text) OrElse Not IsValidEmail(txtEmail.Text) Then
+                lblMensaje.Text = "Email no válido."
+                lblMensaje.ForeColor = Drawing.Color.Red
+                Return
+            End If
+
+            Dim cliente As New Cliente()
+            cliente.Nombre = Nothing.Text.Trim()
+            cliente.Apellidos = txtApellidos.Text.Trim()
+            cliente.Telefono = txtTelefono.Text.Trim()
+            cliente.Email = txtEmail.Text.Trim()
+
+            Dim clienteId As Integer = 0
+            If Integer.TryParse(ViewState("ClienteId"), clienteId) AndAlso clienteId > 0 Then
+                cliente.ClienteId = clienteId
+                repo.Update(cliente)
+                lblMensaje.Text = "Cliente actualizado correctamente."
+            Else
+                repo.Insert(cliente)
+                lblMensaje.Text = "Cliente guardado correctamente."
+            End If
+
+            lblMensaje.ForeColor = Drawing.Color.Green
+            LimpiarFormulario()
+            CargarClientes()
         Else
-            repo.Insert(cliente)
-            lblMensaje.Text = "Cliente guardado correctamente."
+            lblNombreValidacion.Text = "Nombre es obligatorio."
+            Dim lblNombreValidacion As Object = Nothing
+            lblNombreValidacion.ForeColor = Drawing.Color.Red
+            Return
         End If
-
-        lblMensaje.ForeColor = Drawing.Color.Green
-        LimpiarFormulario()
-        CargarClientes()
     End Sub
 
-    Protected Sub gvClientes_SelectedIndexChanged(sender As Object, e As EventArgs)
+    Protected Sub gvClientes_SelectedIndexChanged(sender As Object, e As EventArgs, gvClientes As Object)
         Dim clienteId As Integer = CInt(gvClientes.SelectedDataKey.Value)
         Dim cliente As Cliente = repo.GetAll().Find(Function(c) c.ClienteId = clienteId)
 
         If cliente IsNot Nothing Then
+            Dim txtNombre As Object = Nothing
             txtNombre.Text = cliente.Nombre
+            Dim txtApellidos As Object = Nothing
             txtApellidos.Text = cliente.Apellidos
+            Dim txtTelefono As Object = Nothing
             txtTelefono.Text = cliente.Telefono
+            Dim txtEmail As Object = Nothing
             txtEmail.Text = cliente.Email
             ViewState("ClienteId") = cliente.ClienteId
         End If
     End Sub
 
     Protected Sub gvClientes_RowDeleting(sender As Object, e As GridViewDeleteEventArgs)
+        Dim gvClientes As Object = Nothing
         Dim clienteId As Integer = CInt(gvClientes.DataKeys(e.RowIndex).Value)
         Try
             repo.Delete(clienteId)
@@ -101,12 +121,16 @@ Partial Class Clientes
     End Sub
 
     Private Sub LimpiarFormulario()
+        Dim txtNombre As Object = Nothing
         txtNombre.Text = ""
+        Dim txtApellidos As Object = Nothing
         txtApellidos.Text = ""
+        Dim txtTelefono As Object = Nothing
         txtTelefono.Text = ""
+        Dim txtEmail As Object = Nothing
         txtEmail.Text = ""
         ViewState("ClienteId") = Nothing
-        gvClientes.SelectedIndex = -1
+        Clientes.SelectedIndex = -1
         lblMensaje.Text = ""
     End Sub
 
